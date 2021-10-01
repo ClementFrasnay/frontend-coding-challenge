@@ -7,14 +7,32 @@ import {
   getTournamentsSuccess
 } from '../actions/tournaments';
 
-function fetchTournaments() {
-  return fetch(API_TOURNAMENTS_URL);
+function createTournament(name: string) {
+  return fetch(API_TOURNAMENTS_URL, {
+    method: 'POST',
+    body: JSON.stringify({ name })
+  });
+}
+
+function editTournament(id: string, name: string) {
+  return fetch(`${API_TOURNAMENTS_URL}/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ name })
+  });
+}
+
+function deleteTournament(id: string) {
+  return fetch(`${API_TOURNAMENTS_URL}/${id}`, { method: 'DELETE' });
+}
+
+function fetchTournaments(q: string) {
+  return fetch(`${API_TOURNAMENTS_URL}?q=${q}`);
 }
 
 export function fetchTournamentsThunk(q: string = '') {
   return function(dispatch: Dispatch) {
     dispatch(getTournaments());
-    return fetchTournaments()
+    return fetchTournaments(q)
       .then(res => res.json())
       .then(
         (data: Tournament[]) => dispatch(getTournamentsSuccess(data)),

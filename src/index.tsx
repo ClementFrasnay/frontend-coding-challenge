@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { connect, Provider } from 'react-redux';
 import GlobalStyle from './GlobalStyle';
@@ -40,24 +40,6 @@ const ErrorContainer = styled.div`
   }
 `;
 
-const tournament: Tournament = {
-  id: 'id-1',
-  name: 'Sed Natus Itaque',
-  organizer: 'Sed Autem',
-  game: 'Rocket League',
-  participants: {
-    current: 3,
-    max: 256
-  },
-  startDate: '27/02/2020, 12:50:53'
-};
-const tournaments: Tournament[] = new Array(9).fill(tournament);
-const props = {
-  isLoading: false,
-  hasFailed: false,
-  tournaments
-};
-
 interface AppProps {
   isLoading: boolean;
   hasFailed: boolean;
@@ -68,24 +50,37 @@ interface AppProps {
 const App: React.FC<AppProps> = props => {
   const { isLoading, hasFailed, tournaments, fetchTournamentsThunk } = props;
 
-  useEffect(() => {
-    fetchTournamentsThunk();
+  const [search, setSearch] = useState('');
+  const onSearch = useCallback(event => setSearch(event.target.value), []);
+  const onRetry = useCallback(() => fetchTournamentsThunk(search), [search]);
+
+  const onCreate = useCallback(() => {
+    const newTournament = window.prompt('Tournament Name:');
+    // TODO POST with new tournament name
   }, []);
+
+  useEffect(() => {
+    fetchTournamentsThunk(search);
+  }, [search]);
 
   return (
     <Container>
       <H4>FACEIT Tournaments</H4>
 
       <Header>
-        <Input placeholder="Search tournaments ..." />
-        <Button>Create tournament</Button>
+        <Input
+          placeholder="Search tournaments ..."
+          value={search}
+          onChange={onSearch}
+        />
+        <Button onClick={onCreate}>Create tournament</Button>
       </Header>
 
       <ContentContainer>
         {hasFailed ? (
           <ErrorContainer>
             <div>Something went wrong.</div>
-            <Button>Retry</Button>
+            <Button onClick={onRetry}>Retry</Button>
           </ErrorContainer>
         ) : isLoading ? (
           <LoadingContainer>Loading tournaments ...</LoadingContainer>

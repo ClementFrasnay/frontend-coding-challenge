@@ -1,6 +1,6 @@
 import { Tournament } from '../models';
 import H6 from './H6';
-import React from 'react';
+import React, { useCallback } from 'react';
 import Button from './Button';
 import styled from 'styled-components';
 import theme from '../theme';
@@ -35,6 +35,18 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
     startDate
   } = props.tournament;
 
+  const onEdit = useCallback(() => {
+    const newName = window.prompt('New Tournament Name:', name);
+    // TODO PUT with new tournament name
+  }, [name]);
+
+  const onDelete = useCallback(() => {
+    const result = window.confirm(
+      'Do you really want to delete this tournament?'
+    );
+    // TODO DELETE with new tournament name
+  }, []);
+
   return (
     <Container>
       <H6>{name}</H6>
@@ -45,8 +57,8 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
       </div>
       <div>Start: {startDate}</div>
       <ButtonsContainer>
-        <Button>Edit</Button>
-        <Button>Delete</Button>
+        <Button onClick={onEdit}>Edit</Button>
+        <Button onClick={onDelete}>Delete</Button>
       </ButtonsContainer>
     </Container>
   );
