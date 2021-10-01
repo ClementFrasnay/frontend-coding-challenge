@@ -10,7 +10,12 @@ import Button from './components/Button';
 import styled from 'styled-components';
 import Card from './components/Card';
 import { Store, Tournament } from './models';
-import { fetchTournamentsThunk } from './redux/thunk/tournamentsThunk';
+import {
+  fetchTournamentsThunk,
+  deleteTournamentThunk,
+  editTournamentThunk,
+  createTournamentThunk
+} from './redux/thunk/tournamentsThunk';
 
 const Header = styled.div`
   display: flex;
@@ -44,19 +49,32 @@ interface AppProps {
   isLoading: boolean;
   hasFailed: boolean;
   tournaments: Tournament[];
-  fetchTournamentsThunk: any; //TODO
+  fetchTournamentsThunk: (search?: string) => void;
+  deleteTournamentThunk: (id: string) => void;
+  editTournamentThunk: (id: string, name: string) => void;
+  createTournamentThunk: (name: string) => void;
 }
 
 const App: React.FC<AppProps> = props => {
-  const { isLoading, hasFailed, tournaments, fetchTournamentsThunk } = props;
+  const {
+    isLoading,
+    hasFailed,
+    tournaments,
+    fetchTournamentsThunk,
+    deleteTournamentThunk,
+    editTournamentThunk,
+    createTournamentThunk
+  } = props;
 
   const [search, setSearch] = useState('');
   const onSearch = useCallback(event => setSearch(event.target.value), []);
   const onRetry = useCallback(() => fetchTournamentsThunk(search), [search]);
 
   const onCreate = useCallback(() => {
-    const newTournament = window.prompt('Tournament Name:');
-    // TODO POST with new tournament name
+    const name = window.prompt('Tournament Name:');
+    if (!!name) {
+      createTournamentThunk(name);
+    }
   }, []);
 
   useEffect(() => {
@@ -85,7 +103,14 @@ const App: React.FC<AppProps> = props => {
         ) : isLoading ? (
           <LoadingContainer>Loading tournaments ...</LoadingContainer>
         ) : !!tournaments.length ? (
-          tournaments.map(t => <Card tournament={t} key={t.id} />)
+          tournaments.map(t => (
+            <Card
+              tournament={t}
+              key={t.id}
+              deleteTournamentThunk={deleteTournamentThunk}
+              editTournamentThunk={editTournamentThunk}
+            />
+          ))
         ) : (
           <LoadingContainer>No tournament found.</LoadingContainer>
         )}
@@ -103,7 +128,10 @@ function mapStateToProps(state: Store) {
 }
 
 const mapDispatchToProps = {
-  fetchTournamentsThunk
+  fetchTournamentsThunk,
+  deleteTournamentThunk,
+  editTournamentThunk,
+  createTournamentThunk
 };
 
 const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);

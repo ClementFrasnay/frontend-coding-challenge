@@ -1,4 +1,7 @@
 import {
+  TOURNAMENTS_CREATE,
+  TOURNAMENTS_DELETE,
+  TOURNAMENTS_EDIT,
   TOURNAMENTS_GET,
   TOURNAMENTS_GET_ERROR,
   TOURNAMENTS_GET_SUCCESS
@@ -18,6 +21,20 @@ export default function tournaments(
         ...tournament,
         startDate: formatDate(tournament.startDate)
       }));
+
+    case TOURNAMENTS_DELETE:
+      return state.filter(tournament => tournament.id !== action.id);
+
+    case TOURNAMENTS_EDIT:
+      return state.map(tournament =>
+        tournament.id === action.id
+          ? { ...tournament, name: action.name }
+          : tournament
+      );
+
+    case TOURNAMENTS_CREATE:
+      return [...state, action.tournament];
+
     case TOURNAMENTS_GET:
     case TOURNAMENTS_GET_ERROR:
     default:

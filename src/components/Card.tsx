@@ -24,28 +24,36 @@ const ButtonsContainer = styled.div`
 
 interface CardProps {
   tournament: Tournament;
+  deleteTournamentThunk: (id: string) => void;
+  editTournamentThunk: (id: string, name: string) => void;
 }
 
 const Card: React.FC<CardProps> = (props: CardProps) => {
+  const { deleteTournamentThunk, editTournamentThunk, tournament } = props;
   const {
+    id,
     name,
     organizer,
     game,
     participants: { current, max },
     startDate
-  } = props.tournament;
+  } = tournament;
 
   const onEdit = useCallback(() => {
     const newName = window.prompt('New Tournament Name:', name);
-    // TODO PUT with new tournament name
-  }, [name]);
+    if (!!newName) {
+      editTournamentThunk(id, newName);
+    }
+  }, [id, name]);
 
   const onDelete = useCallback(() => {
     const result = window.confirm(
       'Do you really want to delete this tournament?'
     );
-    // TODO DELETE with new tournament name
-  }, []);
+    if (result) {
+      deleteTournamentThunk(id);
+    }
+  }, [id]);
 
   return (
     <Container>
