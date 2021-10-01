@@ -1,26 +1,8 @@
-import { Tournament } from '../models';
-import H6 from './H6';
+import { Tournament } from '../../models';
+import H6 from './../H6';
 import React, { useCallback } from 'react';
-import Button from './Button';
-import styled from 'styled-components';
-import theme from '../theme';
-
-const Container = styled.div`
-  background: ${theme.palette.background.base};
-  border-radius: 4px;
-  width: calc(304px - 2 * 15px);
-  margin: 1rem 0;
-  padding: 15px;
-`;
-
-const ButtonsContainer = styled.div`
-  display: flex;
-  margin: 8px 0;
-
-  > button {
-    margin-right: 8px;
-  }
-`;
+import Button from './../Button';
+import { ButtonsContainer, Container } from './Card.style';
 
 interface CardProps {
   tournament: Tournament;

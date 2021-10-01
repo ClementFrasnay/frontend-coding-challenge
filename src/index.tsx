@@ -7,8 +7,7 @@ import Container from './components/Container';
 import H4 from './components/H4';
 import Input from './components/Input';
 import Button from './components/Button';
-import styled from 'styled-components';
-import Card from './components/Card';
+import Card from './components/Card/Card';
 import { Store, Tournament } from './models';
 import {
   fetchTournamentsThunk,
@@ -16,34 +15,13 @@ import {
   editTournamentThunk,
   createTournamentThunk
 } from './redux/thunk/tournamentsThunk';
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const ContentContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-`;
-
-const LoadingContainer = styled.div`
-  margin: auto;
-  margin-top: 20px;
-`;
-
-const ErrorContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin: auto;
-  margin-top: 20px;
-  height: 90px;
-
-  > button {
-    margin: auto;
-  }
-`;
+import {
+  ContentContainer,
+  ErrorContainer,
+  Header,
+  CenteredContainer
+} from './index.style';
+import debounce from 'lodash.debounce';
 
 interface AppProps {
   isLoading: boolean;
@@ -68,7 +46,7 @@ const App: React.FC<AppProps> = props => {
 
   const [search, setSearch] = useState('');
   const onSearch = useCallback(event => setSearch(event.target.value), []);
-  const onRetry = useCallback(() => fetchTournamentsThunk(search), [search]);
+  const onRetry = useCallback(() => debouncedSearch(search), [search]);
 
   const onCreate = useCallback(() => {
     const name = window.prompt('Tournament Name:');
@@ -77,8 +55,13 @@ const App: React.FC<AppProps> = props => {
     }
   }, []);
 
+  const debouncedSearch = useCallback(
+    debounce(search => fetchTournamentsThunk(search), 300),
+    []
+  );
+
   useEffect(() => {
-    fetchTournamentsThunk(search);
+    debouncedSearch(search);
   }, [search]);
 
   return (
@@ -101,7 +84,7 @@ const App: React.FC<AppProps> = props => {
             <Button onClick={onRetry}>Retry</Button>
           </ErrorContainer>
         ) : isLoading ? (
-          <LoadingContainer>Loading tournaments ...</LoadingContainer>
+          <CenteredContainer>Loading tournaments ...</CenteredContainer>
         ) : !!tournaments.length ? (
           tournaments.map(t => (
             <Card
@@ -112,7 +95,7 @@ const App: React.FC<AppProps> = props => {
             />
           ))
         ) : (
-          <LoadingContainer>No tournament found.</LoadingContainer>
+          <CenteredContainer>No tournament found.</CenteredContainer>
         )}
       </ContentContainer>
     </Container>
