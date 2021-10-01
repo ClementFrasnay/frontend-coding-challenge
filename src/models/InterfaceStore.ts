@@ -10,7 +10,12 @@ export interface Tournament {
   startDate: string;
 }
 
+export interface Request {
+  isLoading: boolean;
+  hasFailed: boolean;
+}
+
 export interface Store {
-  loading: boolean;
+  request: Request;
   tournaments: Tournament[];
 }

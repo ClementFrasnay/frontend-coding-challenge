@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
+import { connect, Provider } from 'react-redux';
 import GlobalStyle from './GlobalStyle';
-import store from './store';
+import store from './redux/store';
 import Container from './components/Container';
 import H4 from './components/H4';
 import Input from './components/Input';
 import Button from './components/Button';
 import styled from 'styled-components';
 import Card from './components/Card';
-import { Tournament } from './models';
+import { Store, Tournament } from './models';
+import { fetchTournamentsThunk } from './redux/thunk/tournamentsThunk';
 
 const Header = styled.div`
   display: flex;
@@ -57,8 +58,19 @@ const props = {
   tournaments
 };
 
-const App: React.FC = () => {
-  const { isLoading, hasFailed, tournaments } = props;
+interface AppProps {
+  isLoading: boolean;
+  hasFailed: boolean;
+  tournaments: Tournament[];
+  fetchTournamentsThunk: any; //TODO
+}
+
+const App: React.FC<AppProps> = props => {
+  const { isLoading, hasFailed, tournaments, fetchTournamentsThunk } = props;
+
+  useEffect(() => {
+    fetchTournamentsThunk();
+  }, []);
 
   return (
     <Container>
@@ -87,10 +99,24 @@ const App: React.FC = () => {
   );
 };
 
+function mapStateToProps(state: Store) {
+  return {
+    hasFailed: state.request.hasFailed,
+    isLoading: state.request.isLoading,
+    tournaments: state.tournaments
+  };
+}
+
+const mapDispatchToProps = {
+  fetchTournamentsThunk
+};
+
+const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);
+
 ReactDOM.render(
   <Provider store={store}>
     <GlobalStyle />
-    <App />
+    <ConnectedApp />
   </Provider>,
   document.getElementById('root')
 );
