@@ -46,7 +46,8 @@ export function fetchTournamentsThunk(q: string = '') {
     return fetchTournaments(q)
       .then(res => res.json())
       .then(
-        (data: Tournament[]) => dispatch(getTournamentsSuccessAction(data)),
+        (tournaments: Tournament[]) =>
+          dispatch(getTournamentsSuccessAction(tournaments)),
         (error: Error) => dispatch(getTournamentsErrorAction(error))
       );
   };

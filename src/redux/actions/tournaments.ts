@@ -14,10 +14,10 @@ export function getTournamentsAction() {
   };
 }
 
-export function getTournamentsSuccessAction(data: Tournament[]) {
+export function getTournamentsSuccessAction(tournaments: Tournament[]) {
   return {
     type: TOURNAMENTS_GET_SUCCESS,
-    data
+    tournaments
   };
 }
 

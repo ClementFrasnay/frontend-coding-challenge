@@ -1,18 +1,15 @@
+import { Action } from 'redux';
 import {
   TOURNAMENTS_GET,
   TOURNAMENTS_GET_ERROR,
   TOURNAMENTS_GET_SUCCESS
 } from '../../constants/reduxActions';
 import { Request } from '../../models';
-
-const initialState: Request = {
-  isLoading: false,
-  hasFailed: false
-};
+import { initialState } from '../store/initialState';
 
 export default function request(
-  state: Request = initialState,
-  action: any //TODO
+  state: Request = initialState.request,
+  action: Action
 ) {
   switch (action.type) {
     case TOURNAMENTS_GET:

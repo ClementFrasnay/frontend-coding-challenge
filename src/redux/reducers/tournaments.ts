@@ -7,33 +7,45 @@ import {
   TOURNAMENTS_GET_SUCCESS
 } from '../../constants/reduxActions';
 import { Tournament } from '../../models';
+import {
+  TournamentAction,
+  TournamentSuccessAction,
+  TournamentDeleteAction,
+  TournamentCreateAction,
+  TournamentEditAction
+} from '../../models/interfaceAction';
 import { formatDate } from '../../tools/helper';
-
-const initialState: Tournament[] = [];
+import { initialState } from '../store/initialState';
 
 export default function tournaments(
-  state: Tournament[] = initialState,
-  action: any //TODO
+  state: Tournament[] = initialState.tournaments,
+  action: TournamentAction
 ) {
   switch (action.type) {
-    case TOURNAMENTS_GET_SUCCESS:
-      return action.data.map((tournament: Tournament) => ({
+    case TOURNAMENTS_GET_SUCCESS: {
+      const { tournaments } = action as TournamentSuccessAction;
+      return tournaments.map((tournament: Tournament) => ({
         ...tournament,
         startDate: formatDate(tournament.startDate)
       }));
+    }
 
-    case TOURNAMENTS_DELETE:
-      return state.filter(tournament => tournament.id !== action.id);
+    case TOURNAMENTS_DELETE: {
+      const { id } = action as TournamentDeleteAction;
+      return state.filter(tournament => tournament.id !== id);
+    }
 
-    case TOURNAMENTS_EDIT:
+    case TOURNAMENTS_EDIT: {
+      const { id, name } = action as TournamentEditAction;
       return state.map(tournament =>
-        tournament.id === action.id
-          ? { ...tournament, name: action.name }
-          : tournament
+        tournament.id === id ? { ...tournament, name: name } : tournament
       );
+    }
 
-    case TOURNAMENTS_CREATE:
-      return [...state, action.tournament];
+    case TOURNAMENTS_CREATE: {
+      const { tournament } = action as TournamentCreateAction;
+      return [...state, tournament];
+    }
 
     case TOURNAMENTS_GET:
     case TOURNAMENTS_GET_ERROR:
